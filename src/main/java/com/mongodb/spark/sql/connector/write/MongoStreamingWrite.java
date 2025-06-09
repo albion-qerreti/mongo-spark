@@ -17,10 +17,11 @@
 
 package com.mongodb.spark.sql.connector.write;
 
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.model.CreateCollectionOptions;
-import com.mongodb.spark.sql.connector.config.WriteConfig;
-import com.mongodb.spark.sql.connector.exceptions.DataException;
+import static java.lang.String.format;
+
+import java.util.Arrays;
+import java.util.Objects;
+
 import org.apache.spark.sql.connector.write.LogicalWriteInfo;
 import org.apache.spark.sql.connector.write.PhysicalWriteInfo;
 import org.apache.spark.sql.connector.write.WriterCommitMessage;
@@ -29,10 +30,11 @@ import org.apache.spark.sql.connector.write.streaming.StreamingWrite;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
-import java.util.Objects;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.CreateCollectionOptions;
 
-import static java.lang.String.format;
+import com.mongodb.spark.sql.connector.config.WriteConfig;
+import com.mongodb.spark.sql.connector.exceptions.DataException;
 
 /** MongoStreamingWrite defines how to write the data to MongoDB when streaming data. */
 final class MongoStreamingWrite implements StreamingWrite {
@@ -63,19 +65,19 @@ final class MongoStreamingWrite implements StreamingWrite {
    */
   @Override
   public StreamingDataWriterFactory createStreamingWriterFactory(
-          final PhysicalWriteInfo physicalWriteInfo) {
-      if (truncate) {
-          writeConfig.doWithCollection(MongoCollection::drop);
-          if (writeConfig.getValidationPipeline() != null) {
-              writeConfig.doWithDatabase(
-                      db ->
-                              db.createCollection(
-                                      writeConfig.getCollectionName(),
-                                      new CreateCollectionOptions()
-                                              .validationOptions(writeConfig.getValidationOptions())));
-          }
+      final PhysicalWriteInfo physicalWriteInfo) {
+    if (truncate) {
+      writeConfig.doWithCollection(MongoCollection::drop);
+      if (writeConfig.getValidationPipeline() != null) {
+        writeConfig.doWithDatabase(
+            db ->
+                db.createCollection(
+                    writeConfig.getCollectionName(),
+                    new CreateCollectionOptions()
+                        .validationOptions(writeConfig.getValidationOptions())));
       }
-      return new MongoDataWriterFactory(info.schema(), writeConfig);
+    }
+    return new MongoDataWriterFactory(info.schema(), writeConfig);
   }
 
   /**

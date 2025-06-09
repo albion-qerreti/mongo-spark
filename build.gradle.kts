@@ -35,7 +35,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "7.0.0"
 }
 
-version = "10.1.4"
+version = "10.1.5"
 group = "org.mongodb.spark"
 
 description = "The official MongoDB Apache Spark Connect Connector."
@@ -49,7 +49,7 @@ repositories {
     mavenCentral()
 }
 
-// Usage: ./gradlew -DscalaVersion=2.12 -DsparkVersion=3.1.2
+// Usage: ./gradlew -DscalaVersion=2.12 -DsparkVersion=3.5.0
 val scalaVersion = System.getProperty("scalaVersion", "2.12")
 val sparkVersion = System.getProperty("sparkVersion", "3.5.0")
 

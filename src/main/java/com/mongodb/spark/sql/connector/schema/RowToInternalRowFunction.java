@@ -17,20 +17,21 @@
 
 package com.mongodb.spark.sql.connector.schema;
 
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.catalyst.InternalRow;
 import org.apache.spark.sql.catalyst.analysis.SimpleAnalyzer$;
 import org.apache.spark.sql.catalyst.encoders.ExpressionEncoder;
 import org.apache.spark.sql.catalyst.expressions.Attribute;
 import org.apache.spark.sql.types.StructType;
+
 import scala.collection.JavaConverters;
 import scala.collection.Seq;
-
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * A Row to InternalRow function that uses a resolved and bound encoder for the given schema.
@@ -43,17 +44,17 @@ final class RowToInternalRowFunction implements Function<Row, InternalRow>, Seri
 
   private final ExpressionEncoder.Serializer<Row> serializer;
 
-    RowToInternalRowFunction(final StructType schema) {
-        //    this.serializer = RowEncoder$.MODULE$.apply(schema).createSerializer();
-        List<Attribute> attributesList =
-                Arrays.stream(schema.fields())
-                        .map(new StructFieldToAttributeFunction())
-                        .collect(Collectors.toList());
-        Seq<Attribute> attributeSeq = JavaConverters.asScalaBuffer(attributesList).toSeq();
-        ExpressionEncoder<Row> rowEncoder = ExpressionEncoder.apply(schema);
-        this.serializer =
-                rowEncoder.resolveAndBind(attributeSeq, SimpleAnalyzer$.MODULE$).createSerializer();
-    }
+  RowToInternalRowFunction(final StructType schema) {
+    //    this.serializer = RowEncoder$.MODULE$.apply(schema).createSerializer();
+    List<Attribute> attributesList =
+        Arrays.stream(schema.fields())
+            .map(new StructFieldToAttributeFunction())
+            .collect(Collectors.toList());
+    Seq<Attribute> attributeSeq = JavaConverters.asScalaBuffer(attributesList).toSeq();
+    ExpressionEncoder<Row> rowEncoder = ExpressionEncoder.apply(schema);
+    this.serializer =
+        rowEncoder.resolveAndBind(attributeSeq, SimpleAnalyzer$.MODULE$).createSerializer();
+  }
 
   @Override
   public InternalRow apply(final Row row) {

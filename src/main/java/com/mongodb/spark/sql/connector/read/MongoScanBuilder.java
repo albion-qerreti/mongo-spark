@@ -243,7 +243,7 @@ public final class MongoScanBuilder
       return new FilterAndPipelineStage(filter, Filters.eq(isNullFilter.attribute(), null));
     } else if (filter instanceof IsNotNull) {
       IsNotNull isNotNullFilter = (IsNotNull) filter;
-      return new FilterAndPipelineStage(filter, Filters.exists(isNotNullFilter.attribute(), true));
+      return new FilterAndPipelineStage(filter, Filters.ne(isNotNullFilter.attribute(), null));
     } else if (filter instanceof LessThan) {
       LessThan lessThan = (LessThan) filter;
       return new FilterAndPipelineStage(
