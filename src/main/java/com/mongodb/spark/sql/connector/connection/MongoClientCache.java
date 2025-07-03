@@ -26,15 +26,24 @@ import java.util.concurrent.TimeUnit;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import org.bson.Document;
+import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.conversions.Bson;
 
+import com.mongodb.ClientBulkWriteException;
 import com.mongodb.ClientSessionOptions;
+import com.mongodb.ReadConcern;
+import com.mongodb.ReadPreference;
+import com.mongodb.WriteConcern;
 import com.mongodb.client.ChangeStreamIterable;
 import com.mongodb.client.ClientSession;
 import com.mongodb.client.ListDatabasesIterable;
 import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoCluster;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.MongoIterable;
+import com.mongodb.client.model.bulk.ClientBulkWriteOptions;
+import com.mongodb.client.model.bulk.ClientBulkWriteResult;
+import com.mongodb.client.model.bulk.ClientNamespacedWriteModel;
 import com.mongodb.connection.ClusterDescription;
 
 import com.mongodb.spark.sql.connector.annotations.ThreadSafe;
@@ -163,6 +172,56 @@ final class MongoClientCache {
     }
 
     @Override
+    public CodecRegistry getCodecRegistry() {
+      return wrapped.getCodecRegistry();
+    }
+
+    @Override
+    public ReadPreference getReadPreference() {
+      return wrapped.getReadPreference();
+    }
+
+    @Override
+    public WriteConcern getWriteConcern() {
+      return wrapped.getWriteConcern();
+    }
+
+    @Override
+    public ReadConcern getReadConcern() {
+      return wrapped.getReadConcern();
+    }
+
+    @Override
+    public Long getTimeout(final TimeUnit timeUnit) {
+      return wrapped.getTimeout(timeUnit);
+    }
+
+    @Override
+    public MongoCluster withCodecRegistry(final CodecRegistry codecRegistry) {
+      return wrapped.withCodecRegistry(codecRegistry);
+    }
+
+    @Override
+    public MongoCluster withReadPreference(final ReadPreference readPreference) {
+      return wrapped.withReadPreference(readPreference);
+    }
+
+    @Override
+    public MongoCluster withWriteConcern(final WriteConcern writeConcern) {
+      return wrapped.withWriteConcern(writeConcern);
+    }
+
+    @Override
+    public MongoCluster withReadConcern(final ReadConcern readConcern) {
+      return wrapped.withReadConcern(readConcern);
+    }
+
+    @Override
+    public MongoCluster withTimeout(final long timeout, final TimeUnit timeUnit) {
+      return wrapped.withTimeout(timeout, timeUnit);
+    }
+
+    @Override
     public MongoDatabase getDatabase(final String databaseName) {
       return wrapped.getDatabase(databaseName);
     }
@@ -253,6 +312,36 @@ final class MongoClientCache {
         final List<? extends Bson> pipeline,
         final Class<TResult> tResultClass) {
       return wrapped.watch(clientSession, pipeline, tResultClass);
+    }
+
+    @Override
+    public ClientBulkWriteResult bulkWrite(final List<? extends ClientNamespacedWriteModel> list)
+        throws ClientBulkWriteException {
+      return wrapped.bulkWrite(list);
+    }
+
+    @Override
+    public ClientBulkWriteResult bulkWrite(
+        final List<? extends ClientNamespacedWriteModel> list,
+        final ClientBulkWriteOptions clientBulkWriteOptions)
+        throws ClientBulkWriteException {
+      return wrapped.bulkWrite(list);
+    }
+
+    @Override
+    public ClientBulkWriteResult bulkWrite(
+        final ClientSession clientSession, final List<? extends ClientNamespacedWriteModel> list)
+        throws ClientBulkWriteException {
+      return wrapped.bulkWrite(clientSession, list);
+    }
+
+    @Override
+    public ClientBulkWriteResult bulkWrite(
+        final ClientSession clientSession,
+        final List<? extends ClientNamespacedWriteModel> list,
+        final ClientBulkWriteOptions clientBulkWriteOptions)
+        throws ClientBulkWriteException {
+      return wrapped.bulkWrite(clientSession, list, clientBulkWriteOptions);
     }
 
     @Override

@@ -35,7 +35,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "7.0.0"
 }
 
-version = "10.1.5"
+version = "10.1.6"
 group = "org.mongodb.spark"
 
 description = "The official MongoDB Apache Spark Connect Connector."
@@ -55,7 +55,7 @@ val sparkVersion = System.getProperty("sparkVersion", "3.5.0")
 
 extra.apply {
     set("annotationsVersion", "22.0.0")
-    set("mongodbDriverVersion", "[4.8.1,4.8.99)")
+    set("mongodbDriverVersion", "5.4.0")
     set("sparkVersion", sparkVersion)
     set("scalaVersion", scalaVersion)
 
