@@ -135,11 +135,7 @@ final class MongoInputPartitionHelper {
       return Optional.empty();
     }
 
-    // Skip projection if any field has a literal dot in its name
-    boolean hasLiteralDotFields = Arrays.stream(schema.fields())
-        .anyMatch(f -> f.name().contains(".") && !(f.dataType() instanceof StructType));
-
-    if (hasLiteralDotFields) {
+    if (hasDottedFields(schema)) {
       return Optional.empty();
     }
 
@@ -149,6 +145,12 @@ final class MongoInputPartitionHelper {
         .map(f -> fieldPrefix + f.name())
         .forEach(f -> projections.append(f, new BsonInt32(1)));
     return Optional.of(new BsonDocument("$project", projections));
+  }
+
+  // Skip projection if any field has a literal dot in its name
+  private static boolean hasDottedFields(StructType schema) {
+    return Arrays.stream(schema.fields())
+        .anyMatch(field -> field.name().contains(".") && !(field.dataType() instanceof StructType));
   }
 
   private static Function<BsonDocument, List<BsonDocument>> mergePipelineFunction(
