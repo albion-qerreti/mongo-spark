@@ -135,6 +135,14 @@ final class MongoInputPartitionHelper {
       return Optional.empty();
     }
 
+    // Skip projection if any field has a literal dot in its name
+    boolean hasLiteralDotFields = Arrays.stream(schema.fields())
+        .anyMatch(f -> f.name().contains(".") && !(f.dataType() instanceof StructType));
+
+    if (hasLiteralDotFields) {
+      return Optional.empty();
+    }
+
     String fieldPrefix = streamPublishFullDocumentOnly ? "fullDocument." : "";
     BsonDocument projections = new BsonDocument();
     Arrays.stream(schema.fields())
