@@ -147,7 +147,14 @@ final class MongoInputPartitionHelper {
     return Optional.of(new BsonDocument("$project", projections));
   }
 
-  // Skip projection if any field has a literal dot in its name
+  /**
+   * Returns {@code true} if any non-struct field in the schema has a dot in its name.
+   * Such fields cannot be safely used in a MongoDB {@code $project} stage,
+   * as dots are interpreted as nested field delimiter.
+   *
+   * @param schema the Spark schema to check.
+   * @return {@code true} if a non struct field with a dot in its name exists, otherwise returns {@code false}.
+   */
   private static boolean hasDottedFields(StructType schema) {
     return Arrays.stream(schema.fields())
         .anyMatch(field -> field.name().contains(".") && !(field.dataType() instanceof StructType));
